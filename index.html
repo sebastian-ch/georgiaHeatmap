@@ -1,0 +1,84 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            bottom: 0;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.3/papaparse.js"></script>
+    <script src="leaflet-heat.js"></script>
+
+
+
+    <script>
+        var map = L.map('map', {
+            zoomSnap: .2,
+            zoomControl: false,
+            // center: [21.452, -157.958],
+            //zoom: 11
+        });
+
+        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+        }).addTo(map);
+
+
+        Promise.all([
+                d3.json('geojsons/georgia.geojson'),
+                d3.csv('project-files/file.csv')
+            ])
+            .then(([georgia, points]) => {
+
+
+                drawMap(georgia, points)
+            });
+
+        function drawMap(georgia, points) {
+
+
+
+            var gjn = L.geoJson(georgia, {
+                style: {
+                    color: 'black',
+                    fillOpacity: 0
+                }
+            }).addTo(map);
+            map.fitBounds(gjn.getBounds());
+
+            var heat = L.heatLayer(points, {
+                //radius: 25,
+                blur: 20,
+               // maxZoom: 17,
+            }).addTo(map);
+
+        }
+    </script>
+</body>
+
+</html>
