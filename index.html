@@ -72,9 +72,9 @@
             map.fitBounds(gjn.getBounds());
 
             var heat = L.heatLayer(points, {
-                //radius: 25,
+                radius: 20,
                 blur: 20,
-               // maxZoom: 17,
+                maxZoom: 17,
             }).addTo(map);
 
         }
