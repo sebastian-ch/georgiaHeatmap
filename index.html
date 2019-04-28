@@ -32,20 +32,26 @@
     <script src="/leaflet-heat.js"></script>
 
 
-
     <script>
         var map = L.map('map', {
             zoomSnap: .2,
             zoomControl: false,
-            // center: [21.452, -157.958],
-            //zoom: 11
+
         });
 
-        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        map.createPane('labels');
+        map.getPane('labels').style.zIndex = 650;
+        map.getPane('labels').style.pointerEvents = 'none';
+
+        var basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
         }).addTo(map);
 
+        var labels = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            pane: 'labels'
+        }).addTo(map);
 
         Promise.all([
                 d3.json('geojsons/georgia.geojson'),
@@ -58,14 +64,13 @@
 
         function drawMap(georgia, points) {
 
-
-
             var gjn = L.geoJson(georgia, {
                 style: {
                     color: 'black',
                     fillOpacity: 0
                 }
             }).addTo(map);
+
             map.fitBounds(gjn.getBounds());
 
             var heat = L.heatLayer(points, {
